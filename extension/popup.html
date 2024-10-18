@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truthy Extension</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            width: 300px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .toggle-container label {
+            margin-left: 10px;
+        }
+        .instructions-container {
+            margin-bottom: 10px;
+        }
+        .disclaimer {
+            font-size: 0.8em;
+            color: gray;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Truthy</h1>
+    <div class="toggle-container">
+        <input type="checkbox" id="toggle-page">
+        <label for="toggle-page">Enable Truthy on this page</label>
+    </div>
+    <div class="instructions-container">
+        <label for="custom-instructions">Custom Instructions:</label>
+        <textarea id="custom-instructions" rows="4" style="width: 100%;"></textarea>
+    </div>
+    <button id="save-settings">Save Settings</button>
+    <div class="disclaimer">
+        Disclaimer: The information provided may not always be correct since it is AI-generated.
+    </div>
+
+    <script>
+        document.getElementById('save-settings').addEventListener('click', () => {
+            const isEnabled = document.getElementById('toggle-page').checked;
+            const instructions = document.getElementById('custom-instructions').value;
+
+            chrome.storage.sync.set({ isEnabled, instructions }, () => {
+                alert('Settings saved');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            chrome.storage.sync.get(['isEnabled', 'instructions'], (data) => {
+                document.getElementById('toggle-page').checked = data.isEnabled || false;
+                document.getElementById('custom-instructions').value = data.instructions || '';
+            });
+        });
+    </script>
+</body>
+</html>

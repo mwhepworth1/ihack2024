@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Truthy",
+    "version": "1.0",
+    "description": "A BYU-Idaho I-Hack project for the 2024 hackathon. This extension will identify truths found within articles and provide them in an objective manner.",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
+        }
+    ]
+}
