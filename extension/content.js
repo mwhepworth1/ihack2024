@@ -130,16 +130,16 @@ function addEventListeners() {
 }
 
 // Function to get the current page URL
-function getCurrentPageUrl() {
+function getCurrentPageHostname() {
     const url = new URL(window.location.href);
     return url.hostname;
 }
 
 // Function to check if the extension is enabled for the current page
 function checkExtensionEnabled(callback) {
-    const pageUrl = getCurrentPageUrl();
-    chrome.storage.local.get([pageUrl], (data) => {
-        callback(data[pageUrl] || false);
+    const hostname = getCurrentPageHostname();
+    chrome.storage.local.get([hostname], (data) => {
+        callback(data[hostname] || false);
     });
 }
 
