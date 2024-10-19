@@ -3,7 +3,7 @@ const bubbleHTML = `
 <div id="bubble-container">
     <img src="${chrome.runtime.getURL('assets/img/icon-transparent-square.png')}" />
     <div id="close-button">&times;</div>
-    <div id="bubble-content">
+    <div id="bubble-content" style="height: 115px">
         <h1>Truthy found these facts:</h1>
         <ol id="facts-list">
             <!-- Facts will be inserted here -->
@@ -117,7 +117,7 @@ function addEventListeners() {
         bubbleImage.style.display = bubbleContainer.classList.contains('expanded') ? 'none' : 'block';
 
         if (bubbleContainer.classList.contains('expanded')) {
-            //fetchFacts();
+            fetchFacts();
         }
     });
 
@@ -144,25 +144,35 @@ function checkExtensionEnabled(callback) {
 }
 
 // Function to fetch facts from the API
+// Function to fetch facts from the API via background.js
 function fetchFacts() {
     const factsList = document.getElementById('facts-list');
     factsList.innerHTML = '<li>Loading...</li>'; // Show loading message
 
-    fetch('https://api.example.com/facts') // Replace with your API endpoint
-        .then(response => response.json())
-        .then(data => {
+    chrome.runtime.sendMessage({ action: 'fetchFacts' }, (response) => {
+        if (chrome.runtime.lastError) {
+            console.error('Error sending message:', chrome.runtime.lastError);
+            factsList.innerHTML = '<li>Error loading facts</li>';
+            return;
+        }
+
+        if (response.success) {
+
+            let facts = response.data.response;
+            let factItems = facts.split('•').map(fact => fact.trim()).filter(fact => fact);
+
             factsList.innerHTML = ''; // Clear loading message
-            data.facts.forEach(fact => {
+            factItems.forEach(fact => {
                 const listItem = document.createElement('li');
                 listItem.textContent = fact;
                 factsList.appendChild(listItem);
             });
-        })
-        .catch(error => {
+        } else {
             factsList.innerHTML = '<li>Error loading facts</li>';
-            console.error('Error fetching facts:', error);
-        });
-}
+            console.error('Error fetching facts:', response.error);
+        }
+    });
+};
 
 // Inject the bubble HTML content and CSS styles if the extension is enabled
 checkExtensionEnabled((isEnabled) => {
