@@ -1,3 +1,7 @@
 # ignore node_modules
 node_modules
+<<<<<<< HEAD
 .env
+=======
+.env
+>>>>>>> 9fa11b0 (Added .env)
