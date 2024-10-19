@@ -179,7 +179,6 @@ function fetchFacts() {
         if (response.success) {
             let facts = response.data.response;
             let factItems = facts.split(/[•*]/).map(fact => fact.trim()).filter(fact => fact);
-            factItems.shift();
 
             // Check if there are any items in factItems, if not, add the var facts as an item
             if (factItems.length === 0) {
