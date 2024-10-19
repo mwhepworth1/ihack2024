@@ -2,7 +2,7 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
 
 app.listen(5000, () => {
     console.log("Listening on port 5000...");
@@ -21,12 +21,15 @@ app.post('/process', (req, res) => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             "model": "llama3.2",
-            "prompt": `Objectively read the following text and identify all truths.
-            Provide them in no more than 10 items in a bulleted list using only one asterisk as the bullet point like so:\n
+            "prompt": `Follow my instructions exactly. Not following my instructions will result in a bad score.
+            Objectively read the following text and identify all truths. Ignore anything unrelated to the bulk of the text.
+            Do not give broad answers, rather focus on important details from within the analyzed text. Do not make any summaries,
+            rather provide facts that would be useful for me to go and use to research further. Make sure your answer is devoid of all bias and opinion.
+            Pick the most important ten facts and include them in a bulleted list of ten items using only one asterisk as the bullet point like so:\n
             * Fact 1
             * Fact 2
             * Fact 3
-            \nIgnore anything unrelated to the bulk of the text.\n${custom_instructions}:\n\n${prompt_text}`,
+            The more detail you provide, the better your score will be.\n${custom_instructions}:\n\n${prompt_text}`,
             "stream": false,
             "options": {
                 "mirostat_tau": 5.0, // default 5.0
