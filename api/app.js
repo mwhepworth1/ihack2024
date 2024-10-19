@@ -41,7 +41,7 @@ app.post('/process', (req, res) => {
                 * Fact 1 
                 * Fact 2 
                 * Fact 3. 
-                Ignore anything unrelated to the bulk of the text. ` + custom_instructions,
+                Ignore anything unrelated to the bulk of the text. Shorten names and make each truth short and concise.` + custom_instructions,
             },
             {
                 role: "user",
