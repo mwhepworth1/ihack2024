@@ -21,8 +21,19 @@
         }
     ],
     "icons": {
-        "16": "assets/img/icon-transparent.png",
-        "48": "assets/img/icon-transparent.png",
-        "128": "assets/img/icon-transparent.png"
-    }
+        "16": "assets/img/icon-transparent-square.png",
+        "48": "assets/img/icon-transparent-square.png",
+        "128": "assets/img/icon-transparent-square.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/img/icon-transparent-square.png"
+            ],
+            "matches": [
+                "https://*/*",
+                "http://*/*"
+            ]
+        }
+    ]
 }
