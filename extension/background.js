@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ success: true, data: storageData[currentUrl] });
             } else {
                 // Data is not available, make the API call
+                console.warn(chrome.storage.local.get('instructions').then(p => console.log(p.instructions)))
                 fetch('http://localhost:5000/process', { // Replace with your API endpoint
                     method: 'POST',
                     headers: {

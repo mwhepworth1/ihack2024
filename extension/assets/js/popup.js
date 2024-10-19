@@ -14,6 +14,12 @@ document.getElementById('toggle-page').addEventListener('change', () => {
     });
 });
 
+// Event listener for the custom-instructions textarea
+document.getElementById('custom-instructions').addEventListener('input', () => {
+    const instructions = document.getElementById('custom-instructions').value;
+    chrome.storage.local.set({ instructions });
+});
+
 // Event listener for DOMContentLoaded to load settings
 document.addEventListener('DOMContentLoaded', () => {
     getCurrentPageHostname((hostname) => {
