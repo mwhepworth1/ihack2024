@@ -1,8 +1,9 @@
 const express = require("express");
+require('dotenv').config();
 
 const app = express();
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '5mb' }));
 
 app.listen(5000, () => {
     console.log("Listening on port 5000...");
@@ -16,33 +17,44 @@ app.post('/process', (req, res) => {
     const prompt_text = req.body.message;
     const custom_instructions = (req.body.custom_instructions) ? req.body.custom_instructions : '';
     
-    fetch('http://localhost:11434/api/generate', {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            "model": "llama3.2",
-            "prompt": `Follow my instructions exactly. Not following my instructions will result in a bad score.
-            Objectively read the following text and identify all truths. Ignore anything unrelated to the bulk of the text.
-            Do not give broad answers, rather focus on important details from within the analyzed text. Do not make any summaries,
-            rather provide facts that would be useful for me to go and use to research further. Make sure your answer is devoid of all bias and opinion.
-            Pick the most important ten facts and include them in a bulleted list of ten items using only one asterisk as the bullet point like so:\n
-            * Fact 1
-            * Fact 2
-            * Fact 3
-            The more detail you provide, the better your score will be.\n${custom_instructions}:\n\n${prompt_text}`,
-            "stream": false,
-            "options": {
-                "mirostat_tau": 5.0, // default 5.0
-                "temperature": 0.0, // default 0.8
-                "tfs_z": 1.0, // default 1.0
-                "top_k": 40, // default 40
-                "top_p": 0.9, // default 0.9
-                // "min_p": 0.0 // default 0.0
+    async function run(model, input) {
+        const response = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/303dc51e9b7ecee861c303f92dffad9d/ai/run/${model}`,
+            {
+                headers: { Authorization: "Bearer " + process.env.CF_API_KEY },
+                method: "POST",
+                body: JSON.stringify(input),
             }
-        })
-    })
-    .then(response => {
-        if (response.status == 200) return response.json();
+        );
+        const result = await response.json();
+        return result;
+    }
+    console.time('CF AI Time');
+    run("@cf/meta/llama-3.1-8b-instruct-fast", {
+        messages: [
+            {
+                role: "system",
+                content: `
+                You are an objective assistant. You are to obey all instructions given to you. 
+                You are to read the following text and identify all truths. 
+                Provide them in no more than 10 items in a bulleted list using only one asterisk as the bullet point like so: 
+                * Fact 1 
+                * Fact 2 
+                * Fact 3. 
+                Ignore anything unrelated to the bulk of the text. ` + custom_instructions,
+            },
+            {
+                role: "user",
+                content: prompt_text,
+            },
+        ],
+        temperature: 0,
+        top_p: 0.5,
+        top_k: 10,
+    }).then(response => {
+        console.warn(response);
+        console.timeEnd('CF AI Time');
+        if (response.success == true) return response.result;
 
         return -1;
     })
@@ -51,7 +63,6 @@ app.post('/process', (req, res) => {
 
         const returnedData = {
             response: data.response,
-            duration: data.total_duration / (10 ** 9)
         }
 
         console.log(returnedData);
