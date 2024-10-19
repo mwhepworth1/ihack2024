@@ -59,6 +59,7 @@ const bubbleCSS = `
     list-style-type: decimal;
     margin-left: 20px;
     margin-top: 3px;
+    line-height: 20px;
     font-size: 1rem;
 }
 

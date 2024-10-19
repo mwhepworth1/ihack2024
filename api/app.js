@@ -55,11 +55,13 @@ app.post('/process', (req, res) => {
         console.warn(response);
         console.timeEnd('CF AI Time');
         if (response.success == true) return response.result;
+        if (response.errors[0].code == 3036) return -2;
 
         return -1;
     })
     .then(data => {
         if (data === -1) throw new Error("Bad Request");
+        if (data === -2) throw new Error("Out of Cloudflare AI credits.")
 
         const returnedData = {
             response: data.response,
