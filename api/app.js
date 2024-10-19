@@ -14,25 +14,24 @@ app.get('/', (_, res) => {
 
 app.post('/process', (req, res) => {
     const prompt_text = req.body.message;
-
-    let body = {
-        "model": "llama3.2",
-        "prompt": `Objectively read the following text and identify all truths. Provide them in no more than 10 items in a bulleted list:\n\n${prompt_text}`,
-        "stream": false,
-        "options": {
-            "mirostat_tau": 5.0, // default 5.0
-            "temperature": 0.0, // default 0.8
-            "tfs_z": 1.0, // default 1.0
-            "top_k": 40, // default 40
-            "top_p": 0.9, // default 0.9
-            // "min_p": 0.0 // default 0.0
-        }
-    }
-
+    const custom_instructions = (req.body.custom_instructions) ? req.body.custom_instructions : '';
+    
     fetch('http://localhost:11434/api/generate', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+            "model": "llama3.2",
+            "prompt": `Objectively read the following text and identify all truths. Provide them in no more than 10 items in a bulleted list\n${custom_instructions}:\n\n${prompt_text}`,
+            "stream": false,
+            "options": {
+                "mirostat_tau": 5.0, // default 5.0
+                "temperature": 0.0, // default 0.8
+                "tfs_z": 1.0, // default 1.0
+                "top_k": 40, // default 40
+                "top_p": 0.9, // default 0.9
+                // "min_p": 0.0 // default 0.0
+            }
+        })
     })
     .then(response => {
         if (response.status == 200) return response.json();
