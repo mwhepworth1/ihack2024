@@ -179,7 +179,7 @@ function fetchFacts() {
         if (response.success) {
 
             let facts = response.data.response;
-            let factItems = facts.split('•').map(fact => fact.trim()).filter(fact => fact);
+            let factItems = facts.split(/[•*]/).map(fact => fact.trim()).filter(fact => fact);
 
             factsList.innerHTML = ''; // Clear loading message
             factItems.forEach(fact => {
