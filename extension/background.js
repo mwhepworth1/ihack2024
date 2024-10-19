@@ -7,6 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                custom_instructions: chrome.storage.local.get('instructions').then(p => console.log(p.instructions)),
                 message: `The Electoral College, established in 1787, is an antiquated system that undermines the democratic principle of "one person, one vote." By allocating electoral votes based on state populations and granting all of a state's votes to the candidate who wins its popular vote, this mechanism disproportionately amplifies the influence of smaller states and can result in a candidate winning the presidency without securing the national popular vote . This distortion was evident in the 2000 and 2016 elections, where the Electoral College outcomes contradicted the popular vote. While some argue that the Electoral College prevents "tyranny of the majority," it simultaneously enables a tyranny of the minority, where the will of the people is subverted by a system designed for a different era`
             })
         })

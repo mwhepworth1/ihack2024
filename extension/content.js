@@ -155,7 +155,7 @@ function fetchFacts() {
             factsList.innerHTML = '<li>Error loading facts</li>';
             return;
         }
-
+        
         if (response.success) {
 
             let facts = response.data.response;
