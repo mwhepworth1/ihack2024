@@ -36,29 +36,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ success: true, data: storageData[currentUrl] });
             } else {
                 // Data is not available, make the API call
-                console.warn(chrome.storage.local.get('instructions').then(p => console.log(p.instructions)))
-                fetch('http://localhost:5000/process', { // Replace with your API endpoint
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        custom_instructions: chrome.storage.local.get('instructions').then(p => console.log(p.instructions)),
-                        message: request.text
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Store the fetched data
-                        storageData[currentUrl] = data;
-                        chrome.storage.local.set({ [STORAGE_KEY]: storageData }, () => {
-                            sendResponse({ success: true, data: data });
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching facts:', error);
-                        sendResponse({ success: false, error: error });
+                function getCustomInstructions(callback) {
+                    chrome.storage.local.get('instructions', (data) => {
+                        callback(data.instructions);
                     });
+                }
+                
+                getCustomInstructions((custom_instructions) => {
+                    console.log('Custom Instructions:', custom_instructions);
+                    fetch('http://localhost:5000/process', { // Replace with your API endpoint
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            custom_instructions: custom_instructions,
+                            message: request.text
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Store the fetched data
+                            storageData[currentUrl] = data;
+                            chrome.storage.local.set({ [STORAGE_KEY]: storageData }, () => {
+                                sendResponse({ success: true, data: data });
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching facts:', error);
+                            sendResponse({ success: false, error: error });
+                        });
+                });
             }
         });
 
