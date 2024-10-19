@@ -19,7 +19,7 @@ app.post('/process', (req, res) => {
     
     async function run(model, input) {
         const response = await fetch(
-            `https://api.cloudflare.com/client/v4/accounts/303dc51e9b7ecee861c303f92dffad9d/ai/run/${model}`,
+            `https://api.cloudflare.com/client/v4/accounts/e475088c8c03b7b243b887361172c942/ai/run/${model}`,
             {
                 headers: { Authorization: "Bearer " + process.env.CF_API_KEY },
                 method: "POST",
