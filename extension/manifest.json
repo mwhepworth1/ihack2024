@@ -5,7 +5,8 @@
     "description": "A BYU-Idaho I-Hack project for the 2024 hackathon. This extension will identify truths found within articles and provide them in an objective manner.",
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
     "background": {
         "service_worker": "background.js"
@@ -18,5 +19,10 @@
             "matches": ["<all_urls>"],
             "js": ["content.js"]
         }
-    ]
+    ],
+    "icons": {
+        "16": "assets/img/icon-transparent.png",
+        "48": "assets/img/icon-transparent.png",
+        "128": "assets/img/icon-transparent.png"
+    }
 }
