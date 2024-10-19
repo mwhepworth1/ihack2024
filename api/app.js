@@ -2,7 +2,7 @@ const express = require("express");
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 app.listen(5000, () => {
     console.log("Listening on port 5000...");
@@ -15,7 +15,7 @@ app.get('/', (_, res) => {
 app.post('/process', (req, res) => {
     const prompt_text = req.body.message;
     const custom_instructions = (req.body.custom_instructions) ? req.body.custom_instructions : '';
-    console.log(custom_instructions);
+    
     fetch('http://localhost:11434/api/generate', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
