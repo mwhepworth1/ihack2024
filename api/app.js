@@ -21,7 +21,7 @@ app.post('/process', (req, res) => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             "model": "llama3.2",
-            "prompt": `Objectively read the following text and identify all truths. Provide them in no more than 10 items in a bulleted list\n${custom_instructions}:\n\n${prompt_text}`,
+            "prompt": `Objectively read the following text and identify all truths. Provide them in no more than 10 items in a bulleted list. Assume that the bulk of the text is the topic of the article. Ignore all other items that are not about the same topic as the bulk of the article.\n${custom_instructions}:\n\n${prompt_text}`,
             "stream": false,
             "options": {
                 "mirostat_tau": 5.0, // default 5.0
