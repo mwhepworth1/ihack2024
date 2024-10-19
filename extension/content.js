@@ -5,9 +5,9 @@ const bubbleHTML = `
     <div id="close-button">&times;</div>
     <div id="bubble-content" style="height: 115px">
         <h1>Truthy found these facts:</h1>
-        <ol id="facts-list">
+        <ul id="facts-list">
             <!-- Facts will be inserted here -->
-        </ol>
+        </ul>
         <p>Click to hide</p>
     </div>
 </div>
@@ -33,8 +33,8 @@ const bubbleCSS = `
 }
 
 #bubble-container.expanded {
-    width: 400px; /* Adjust the width as needed */
-    height: 200px; /* Adjust the height as needed */
+    width: 500px; /* Adjust the width as needed */
+    height: 300px; /* Adjust the height as needed */
     background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -55,11 +55,11 @@ const bubbleCSS = `
     text-align: center;
 }
 
-#bubble-container #bubble-content ol {
+#bubble-container #bubble-content ul {
     list-style-type: decimal;
     margin-left: 20px;
     margin-top: 3px;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 #bubble-container #bubble-content p {
@@ -177,16 +177,22 @@ function fetchFacts() {
         }
         
         if (response.success) {
-
             let facts = response.data.response;
             let factItems = facts.split(/[•*]/).map(fact => fact.trim()).filter(fact => fact);
+            factItems.shift();
 
             factsList.innerHTML = ''; // Clear loading message
+            let itemCount = 0;
             factItems.forEach(fact => {
                 const listItem = document.createElement('li');
-                listItem.textContent = fact;
+                itemCount++;
+                listItem.textContent = `${itemCount}. ${fact}`;
                 factsList.appendChild(listItem);
             });
+
+            // Set the height and make the list scrollable
+            factsList.style.height = '200px';
+            factsList.style.overflowY = 'auto';
         } else {
             factsList.innerHTML = '<li>Error loading facts</li>';
             console.error('Error fetching facts:', response.error);
