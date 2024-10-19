@@ -15,7 +15,7 @@ app.get('/', (_, res) => {
 app.post('/process', (req, res) => {
     const prompt_text = req.body.message;
     const custom_instructions = (req.body.custom_instructions) ? req.body.custom_instructions : '';
-
+    console.log(custom_instructions);
     fetch('http://localhost:11434/api/generate', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
