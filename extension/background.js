@@ -1,14 +1,39 @@
 
 // Listen for messages from content scripts
+const STORAGE_KEY = 'factsStorage';
+
+// Clear factsStorage on extension launch
+chrome.runtime.onStartup.addListener(() => {
+    chrome.storage.local.remove(STORAGE_KEY, () => {
+        if (chrome.runtime.lastError) {
+            console.error('Error clearing factsStorage on startup:', chrome.runtime.lastError);
+        } else {
+            console.log('factsStorage cleared on startup');
+        }
+    });
+});
+
+// Also clear factsStorage when the extension is installed or updated
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.storage.local.remove(STORAGE_KEY, () => {
+        if (chrome.runtime.lastError) {
+            console.error('Error clearing factsStorage on install/update:', chrome.runtime.lastError);
+        } else {
+            console.log('factsStorage cleared on install/update');
+        }
+    });
+});
+// Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'fetchFacts') {
         const currentUrl = request.url;
 
         // Check if the data for the current URL is already stored
-        chrome.storage.local.get([currentUrl], (result) => {
-            if (result[currentUrl]) {
+        chrome.storage.local.get([STORAGE_KEY], (result) => {
+            const storageData = result[STORAGE_KEY] || {};
+            if (storageData[currentUrl]) {
                 // Data is already available, send it back
-                sendResponse({ success: true, data: result[currentUrl] });
+                sendResponse({ success: true, data: storageData[currentUrl] });
             } else {
                 // Data is not available, make the API call
                 fetch('http://localhost:5000/process', { // Replace with your API endpoint
@@ -18,13 +43,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     },
                     body: JSON.stringify({
                         custom_instructions: chrome.storage.local.get('instructions').then(p => console.log(p.instructions)),
-                        message: `The Electoral College, established in 1787, is an antiquated system that undermines the democratic principle of "one person, one vote." By allocating electoral votes based on state populations and granting all of a state's votes to the candidate who wins its popular vote, this mechanism disproportionately amplifies the influence of smaller states and can result in a candidate winning the presidency without securing the national popular vote . This distortion was evident in the 2000 and 2016 elections, where the Electoral College outcomes contradicted the popular vote. While some argue that the Electoral College prevents "tyranny of the majority," it simultaneously enables a tyranny of the minority, where the will of the people is subverted by a system designed for a different era`
+                        message: request.text
                     })
                 })
                     .then(response => response.json())
                     .then(data => {
                         // Store the fetched data
-                        chrome.storage.local.set({ [currentUrl]: data }, () => {
+                        storageData[currentUrl] = data;
+                        chrome.storage.local.set({ [STORAGE_KEY]: storageData }, () => {
                             sendResponse({ success: true, data: data });
                         });
                     })

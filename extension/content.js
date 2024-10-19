@@ -132,7 +132,7 @@ function addEventListeners() {
 // Function to get the current page URL
 function getCurrentPageUrl() {
     const url = new URL(window.location.href);
-    return url.hostname + url.pathname;
+    return url.hostname;
 }
 
 // Function to check if the extension is enabled for the current page
@@ -143,13 +143,33 @@ function checkExtensionEnabled(callback) {
     });
 }
 
-// Function to fetch facts from the API
+// Function to extract text content from specific HTML elements
+function extractTextContent() {
+    // Specify the elements to extract text from within the body tag
+    const body = document.querySelector('body');
+    const elements = body.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li');
+
+    // Collect text content from the specified elements
+    let textContent = '';
+    elements.forEach(element => {
+        textContent += element.textContent.trim() + ' ';
+    });
+
+    // Remove any remaining HTML tags using a regular expression
+    textContent = textContent.replace(/<[^>]*>/g, '');
+
+    // Return the collected text content as a single string
+    return textContent.trim();
+}
 // Function to fetch facts from the API via background.js
 function fetchFacts() {
     const factsList = document.getElementById('facts-list');
     factsList.innerHTML = '<li>Loading...</li>'; // Show loading message
 
-    chrome.runtime.sendMessage({ action: 'fetchFacts' }, (response) => {
+    const currentUrl = window.location.href;
+    const filteredPageContent = extractTextContent();
+
+    chrome.runtime.sendMessage({ action: 'fetchFacts', url: currentUrl, text: filteredPageContent }, (response) => {
         if (chrome.runtime.lastError) {
             console.error('Error sending message:', chrome.runtime.lastError);
             factsList.innerHTML = '<li>Error loading facts</li>';
