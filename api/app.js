@@ -47,6 +47,8 @@ app.post('/process', (req, res) => {
             duration: data.total_duration / (10 ** 9)
         }
 
+        console.log(returnedData);
+
         res.send(returnedData);
     })
     .catch(err => {
