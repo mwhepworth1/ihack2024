@@ -8,6 +8,7 @@ const bubbleHTML = `
         <ul id="facts-list">
             <!-- Facts will be inserted here -->
         </ul>
+        <button id="copy-button">Copy Items</button>
         <p>Click to hide</p>
     </div>
 </div>
@@ -25,17 +26,43 @@ const bubbleCSS = `
     height: 45px;
     cursor: pointer;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #7F7F7F;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     font-family: 'Poppins', sans-serif !important; 
     transition: width 0.3s, height 0.3s; /* Add transition for smooth expansion */
 }
 
+#copy-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    margin-top: -10px;
+    margin-left: 10px;
+    background-color: linear-gradient(90deg, #9FB6C0, #6f9cc2, #28C7F9); 
+    color: black; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#copy-button:hover {
+    background-color: linear-gradient(90deg, #9FB6C0, #93aeba, #6f9cc2);
+}
+
+#copy-button img {
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+}
+
 #bubble-container.expanded {
     width: 500px; /* Adjust the width as needed */
     height: 300px; /* Adjust the height as needed */
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #7F7F7F;
 }
 
 #bubble-container #bubble-content {
@@ -127,6 +154,19 @@ function addEventListeners() {
     closeButton.addEventListener('click', (e) => {
         e.stopPropagation();
         bubbleContainer.style.display = 'none';
+    });
+
+    // Add click event to the copy button to copy items
+    const copyButton = document.getElementById('copy-button');
+    copyButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent the bubble from closing
+        const factsList = document.getElementById('facts-list');
+        const items = Array.from(factsList.querySelectorAll('li')).map(li => li.textContent).join('\n');
+        navigator.clipboard.writeText(items).then(() => {
+            console.log('Items copied to clipboard');
+        }).catch(err => {
+            console.error('Error copying items to clipboard:', err);
+        });
     });
 }
 

@@ -16,7 +16,11 @@ app.get('/', (_, res) => {
 app.post('/process', (req, res) => {
     const prompt_text = req.body.message;
     const custom_instructions = (req.body.custom_instructions) ? req.body.custom_instructions : '';
-    
+    // let date = Date.now();
+    // console.log(date);
+    // return res.status(200).send({response: `${date}`});
+
+
     async function run(model, input) {
         const response = await fetch(
             `https://api.cloudflare.com/client/v4/accounts/e475088c8c03b7b243b887361172c942/ai/run/${model}`,
